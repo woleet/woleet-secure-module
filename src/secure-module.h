@@ -9,7 +9,7 @@
 #define ENCRYPTION_OVERLOAD       0 // 16
 #define PRIVATE_KEY_SIZE          32 + 1 // initial length + NULL terminated character
 #define ENTROPY_SIZE              16 + 1 // initial length + NULL terminated character
-#define PUBLIC_KEY_SIZE           25 + 1 // initial length + NULL terminated character
+#define PUBLIC_KEY_SIZE           35 + 1 // initial length + NULL terminated character
 #define SHA256_SIZE               32 + 1 // initial length + NULL terminated character
 
 /**
@@ -35,5 +35,8 @@ typedef struct {
   uint8_t entropy[ENTROPY_SIZE + ENCRYPTION_OVERLOAD];
   uint8_t publicKey[PUBLIC_KEY_SIZE];
 } full_key_t;
+
+void initModule();
+full_key_t* createKey();
 
 #endif // WRAP_SECURE_MODULE_H_

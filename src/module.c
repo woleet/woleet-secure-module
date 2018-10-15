@@ -1,4 +1,5 @@
 #include "secure-module-js.h"
+#include "secure-module.h"
 
 #define DECLARE_NAPI_METHOD(name, func)     \
   {                                         \
@@ -48,6 +49,8 @@ napi_value ExportModule(napi_env env, napi_value exports)
 {
   // Define module interface
   DEBUG("SecureModule declaration...");
+
+  initModule();
 
   napi_status status;
   napi_property_descriptor properties[] = {

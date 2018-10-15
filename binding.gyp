@@ -12,6 +12,9 @@
         "src/external/trezor/pbkdf2.c",
         "src/external/trezor/rand.c",
         "src/external/trezor/sha2.c"
+      ],
+      "libraries": [
+        "/usr/local/lib/libbtc.so"
       ]
     }
   ]

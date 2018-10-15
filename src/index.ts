@@ -6,7 +6,7 @@ import { Mnemonic, HDPrivateKey, KeyRing } from 'bcoin';
 export interface SecureKey {
   entropy: Buffer;
   privateKey: Buffer;
-  publicKey: Buffer;
+  publicKey: Base58Address;
 }
 
 export class SecureModule {
@@ -44,13 +44,10 @@ export class SecureModule {
     const master = HDPrivateKey.fromMnemonic(mnemonic);
     const xkey = master.derivePath('m/44\'/0\'/0\'');
 
-    const ring = KeyRing.fromPrivate(xkey.privateKey, false);
+    const ring = KeyRing.fromPrivate(xkey.privateKey, true);
 
     const publicKey = ring.getAddress();
     const privateKey = ring.getPrivateKey();
-
-    console.log({ e: mnemonic.getEntropy().toString('hex') });
-    console.log({ s: mnemonic.toSeed('').toString('hex') });
 
     const encryptedEntropy = this.encrypt(mnemonic.getEntropy());
     const encryptedPrivateKey = this.encrypt(privateKey);
@@ -58,7 +55,7 @@ export class SecureModule {
     return {
       entropy: encryptedEntropy,
       privateKey: encryptedPrivateKey,
-      publicKey: publicKey.toRaw(),
+      publicKey: publicKey.toBase58(),
     };
   }
 
@@ -84,7 +81,7 @@ export class SecureModule {
     assert.equal(typeof msg, 'string', 'message argument must be a string');
 
     const decrypted = this.decrypt(key);
-    return message.sign(msg, decrypted, false);
+    return message.sign(msg, decrypted, true);
   }
 
 }

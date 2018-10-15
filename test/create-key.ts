@@ -39,16 +39,12 @@ describe('key creation', () => {
       });
     });
 
-    it(`publicKey should be a Buffer`, async () => {
-      assert(Buffer.isBuffer((await key).publicKey), `"publicKey" should be a Buffer`);
-    });
-
     it(`privateKey should be a Buffer`, async () => {
       assert(Buffer.isBuffer((await key).privateKey), `"privateKey" should be a Buffer`);
     });
 
     it(`entropy should be a Buffer`, async () => {
-      assert(Buffer.isBuffer((await key).privateKey), `"entropy" should be a Buffer`);
+      assert(Buffer.isBuffer((await key).entropy), `"entropy" should be a Buffer`);
     });
 
     it(`privateKey should be a valid Buffer`, async () => {
@@ -65,10 +61,7 @@ describe('key creation', () => {
 
     it(`publicKey should be a valid bitcoin address`, async () => {
       const publicKey = (await key).publicKey;
-      const address = base58.encode(publicKey);
-      const expectedLen = 25; // encryption adds 16 bytes on initial buffer
-      assert.equal(publicKey.length, expectedLen, `"publicKey" should be a ${expectedLen} byte length Buffer`);
-      assert(publicKeyRegexep.test(address), `"publicKey" should match address regexp, got ${publicKey}`);
+      assert(publicKeyRegexep.test(publicKey), `"publicKey" should match address regexp, got ${publicKey}`);
     });
   });
 });

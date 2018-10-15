@@ -54,10 +54,7 @@ describe('signature', () => {
 
   it('sign function should produce valid signature', async () => {
     const sig = await sm.sign(encryptedKey.privateKey, hashToSign);
-    const address = base58.encode(encryptedKey.publicKey);
-    const expectedLen = 65; // encryption adds 16 bytes on initial buffer
-    assert.equal(sig.length, expectedLen, `signature should be a ${expectedLen} byte length Buffer`);
-    assert(message.verify(hashToSign, address, sig.toString('base64')));
+    assert(message.verify(hashToSign, encryptedKey.publicKey, sig.toString('base64')));
   });
 
 });
