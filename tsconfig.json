@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "outDir": "./dist",
+    "target": "es2017",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "typeRoots": [
+      "node_modules/@types",
+      "./types"
+    ]
+  },
+  "include": [
+    "index.ts",
+    "src/**/*.ts",
+    "test/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
