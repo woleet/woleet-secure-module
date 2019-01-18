@@ -1,4 +1,8 @@
 # Woleet secure moodule
+## Prerequisite
+
+node 10 and npm
+
 ## Development mode:
 #### Install the node packages:
     $ npm install

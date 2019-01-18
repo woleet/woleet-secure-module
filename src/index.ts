@@ -1,4 +1,3 @@
-import * as assert from 'assert';
 import * as crypto from 'crypto';
 import * as message from 'bitcoinjs-message';
 import { Mnemonic, HDPrivateKey, KeyRing } from 'bcoin';
@@ -13,13 +12,16 @@ export class SecureModule {
 
   private secret: Buffer = null;
 
+  // https://en.wikipedia.org/wiki/Initialization_vector
+  private iv = crypto.randomBytes(16);
+
   private encrypt(data: Buffer) {
-    const cipher = crypto.createCipher('aes-256-cbc', this.secret);
+    const cipher = crypto.createCipheriv('aes-256-cbc', this.secret, this.iv);
     return Buffer.concat([cipher.update(data), cipher.final()]);
   }
 
   private decrypt(data: Buffer) {
-    const decipher = crypto.createDecipher('aes-256-cbc', this.secret);
+    const decipher = crypto.createDecipheriv('aes-256-cbc', this.secret, this.iv);
     return Buffer.concat([decipher.update(data), decipher.final()]);
   }
 
@@ -34,11 +36,42 @@ export class SecureModule {
   }
 
   async createKey(): Promise<SecureKey> {
-    assert(this.initialized(), 'Secure module is not initialized');
-    assert.equal(arguments.length, 0, 'Create key does not takes arguments');
 
+    if (!this.initialized()) {
+      throw new Error('Secure module is not initialized');
+    }
+
+    if (arguments.length !== 0) {
+      throw new Error('Function "createKey" does not takes arguments');
+    }
+
+    // Get random phrase
+    const mnemonic = new Mnemonic();
+
+    return this.importPhrase(mnemonic.getPhrase());
+  }
+
+  async importPhrase(phrase: string): Promise<SecureKey> {
+
+    if (!this.initialized()) {
+      throw new Error('Secure module is not initialized');
+    }
+
+    if (arguments.length !== 1) {
+      throw new Error('Function "importPhrase" takes only one argument');
+    }
+
+    if (typeof phrase !== 'string') {
+      throw new Error('First argument must be a string');
+    }
+
+    let mnemonic;
     // Get new phrase
-    const mnemonic = Mnemonic.fromPhrase('radio burst level stove exclude violin chief destroy relax depend basket shed');
+    try {
+      mnemonic = Mnemonic.fromPhrase(phrase);
+    } catch (err) {
+      throw new Error('First argument must be a valid phrase');
+    }
 
     // Create an HD private key
     const master = HDPrivateKey.fromMnemonic(mnemonic);
@@ -60,11 +93,25 @@ export class SecureModule {
   }
 
   async exportPhrase(entropy: Buffer): Promise<string> {
-    assert(this.initialized(), 'Secure module is not initialized');
-    assert.equal(arguments.length, 1, 'exportPhrase takes only one argument');
-    assert.equal(entropy.length, 16 + 16, 'first argument must be a 32 bytes length buffer');
 
-    const decrypted = this.decrypt(entropy);
+    if (!this.initialized()) {
+      throw new Error('Secure module is not initialized');
+    }
+
+    if (arguments.length !== 1) {
+      throw new Error('ExportPhrase takes only one argument');
+    }
+
+    if (entropy.length !== (16 + 16)) {
+      throw new Error('First argument must be a 32 bytes length buffer');
+    }
+
+    let decrypted = null;
+    try {
+      decrypted = this.decrypt(entropy);
+    } catch (err) {
+      throw new Error('Failed to decrypt entropy');
+    }
 
     // Get key mnemonic
     const mnemonic = Mnemonic.fromEntropy(decrypted);
@@ -74,13 +121,34 @@ export class SecureModule {
   }
 
   async sign(key: Buffer, msg: string): Promise<Buffer> {
-    assert(this.initialized(), 'Secure module is not initialized');
-    assert.equal(arguments.length, 2, 'exportPhrase takes two arguments');
-    assert(Buffer.isBuffer(key), 'key must be a buffer');
-    assert.equal(key.length, 32 + 16, 'key argument must be a 38 bytes length buffer');
-    assert.equal(typeof msg, 'string', 'message argument must be a string');
 
-    const decrypted = this.decrypt(key);
+    if (!this.initialized()) {
+      throw new Error('Secure module is not initialized');
+    }
+
+    if (arguments.length !== 2) {
+      throw new Error('Function "sign" takes exactly two arguments');
+    }
+
+    if (!Buffer.isBuffer(key)) {
+      throw new Error('Argument "key"  must be a buffer');
+    }
+
+    if (key.length !== (32 + 16)) {
+      throw new Error('Argument "key" must be a 38 bytes length buffer');
+    }
+
+    if (typeof msg !== 'string') {
+      throw new Error('Argument "message" must be a string');
+    }
+
+    let decrypted = null;
+    try {
+      decrypted = this.decrypt(key);
+    } catch (err) {
+      throw new Error('Failed to decrypt key');
+    }
+
     return message.sign(msg, decrypted, true);
   }
 

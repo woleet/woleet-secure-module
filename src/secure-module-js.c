@@ -33,7 +33,7 @@ napi_value New(napi_env env, napi_callback_info info)
 
   secure_module_instance_t *obj = calloc(1, sizeof(secure_module_instance_t));
 
-  #if DBG
+  #if ENABLE_DEBUG
     obj->id = ++globalCounter;
   #endif
 
@@ -87,7 +87,7 @@ napi_value PlusOne(napi_env env, napi_callback_info info)
   DEBUG("SecureModule::CREATE KEY");
   full_key_t* key = createKey();
 
-  DEBUG("SecureModule::CREATED KEY %d", sizeof(key->entropy));
+  DEBUG("SecureModule::CREATED KEY %ld", sizeof(key->entropy));
 
   napi_value num;
   status = napi_create_double(env, obj->counter, &num);

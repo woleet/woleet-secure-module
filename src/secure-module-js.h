@@ -10,9 +10,9 @@
     return NULL;                      \
   }
 
-#define DBG true
+#define ENABLE_DEBUG true
 
-#if DBG
+#if ENABLE_DEBUG
 #define DEBUG(str, ...) \
   fprintf(stdout,"%s(%u): " str "\n", __FILE__, __LINE__, ##__VA_ARGS__)
 static int globalCounter = 0;
@@ -35,7 +35,7 @@ napi_value Init(napi_env env, napi_callback_info info);
 */
 
 typedef struct {
-  #if DBG
+  #if ENABLE_DEBUG
     int id;
   #endif
   unsigned char initialized;

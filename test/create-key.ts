@@ -14,24 +14,24 @@ before(async () => {
 });
 
 // https://github.com/mochajs/mocha/issues/2975
-describe('key creation', () => {
+describe('Key creation', () => {
 
-  it('createKey function should be callable without arguments', async () => {
+  it('Function "createKey" should be callable without arguments', async () => {
     assert.doesNotThrow(() => sm.createKey());
     await assert.doesNotReject(() => sm.createKey());
   });
 
-  it('createKey function should reject if called with arguments (1)', async () => {
+  it('Function "createKey" should reject if called with arguments (1)', async () => {
     // @ts-ignore
-    await assert.rejects(() => sm.createKey('toto'));
+    await assert.rejects(() => sm.createKey('toto'), { message: 'Function "createKey" does not takes arguments' });
   });
 
-  it('createKey function should reject if called with arguments (2)', async () => {
+  it('Function "createKey" should reject if called with arguments (2)', async () => {
     // @ts-ignore
-    await assert.rejects(() => sm.createKey(null));
+    await assert.rejects(() => sm.createKey(null), { message: 'Function "createKey" does not takes arguments' });
   });
 
-  describe('should return a valid object', () => {
+  describe('Should return a valid object', () => {
 
     ['publicKey', 'privateKey', 'entropy'].forEach((prop) => {
       it(`Returned key should have a "${prop}" property`, async () => {
@@ -39,29 +39,29 @@ describe('key creation', () => {
       });
     });
 
-    it(`privateKey should be a Buffer`, async () => {
-      assert(Buffer.isBuffer((await key).privateKey), `"privateKey" should be a Buffer`);
+    it(`Attribute "privateKey" should be a Buffer`, async () => {
+      assert(Buffer.isBuffer((await key).privateKey), `Attribute "privateKey" should be a Buffer`);
     });
 
-    it(`entropy should be a Buffer`, async () => {
-      assert(Buffer.isBuffer((await key).entropy), `"entropy" should be a Buffer`);
+    it(`Attribute "entropy" should be a Buffer`, async () => {
+      assert(Buffer.isBuffer((await key).entropy), `Attribute "entropy" should be a Buffer`);
     });
 
-    it(`privateKey should be a valid Buffer`, async () => {
+    it(`Attribute "privateKey" should be a valid Buffer`, async () => {
       const privateKey = (await key).privateKey;
       const expectedLen = 32 + 16; // encryption adds 16 bytes on initial buffer
-      assert.equal(privateKey.length, 32 + 16, `"privateKey" should be a ${expectedLen} byte length Buffer`);
+      assert.equal(privateKey.length, 32 + 16, `Attribute "privateKey" should be a ${expectedLen} byte length Buffer`);
     });
 
-    it(`entropy should be a valid Buffer`, async () => {
+    it(`Attribute "entropy" should be a valid Buffer`, async () => {
       const entropy = (await key).entropy;
       const expectedLen = 16 + 16; // encryption adds 16 bytes on initial buffer
-      assert.equal(entropy.length, expectedLen, `"entropy" should be a ${expectedLen} byte length Buffer`);
+      assert.equal(entropy.length, expectedLen, `Attribute "entropy" should be a ${expectedLen} byte length Buffer`);
     });
 
-    it(`publicKey should be a valid bitcoin address`, async () => {
+    it(`Attribute "publicKey" should be a valid bitcoin address`, async () => {
       const publicKey = (await key).publicKey;
-      assert(publicKeyRegexep.test(publicKey), `"publicKey" should match address regexp, got ${publicKey}`);
+      assert(publicKeyRegexep.test(publicKey), `Attribute "publicKey" should match address regexp, got ${publicKey}`);
     });
   });
 });
