@@ -15,18 +15,18 @@ export class SecureModule {
   // https://en.wikipedia.org/wiki/Initialization_vector
   private iv = crypto.randomBytes(16);
 
-  private encrypt(data: Buffer) {
+  private initialized() {
+    return !!this.secret;
+  }
+
+  public encrypt(data: Buffer) {
     const cipher = crypto.createCipheriv('aes-256-cbc', this.secret, this.iv);
     return Buffer.concat([cipher.update(data), cipher.final()]);
   }
 
-  private decrypt(data: Buffer) {
+  public decrypt(data: Buffer) {
     const decipher = crypto.createDecipheriv('aes-256-cbc', this.secret, this.iv);
     return Buffer.concat([decipher.update(data), decipher.final()]);
-  }
-
-  private initialized() {
-    return !!this.secret;
   }
 
   async init() {
@@ -35,7 +35,7 @@ export class SecureModule {
       .digest();
   }
 
-  async createKey(): Promise<SecureKey> {
+  public async createKey(): Promise<SecureKey> {
 
     if (!this.initialized()) {
       throw new Error('Secure module is not initialized');
@@ -51,7 +51,7 @@ export class SecureModule {
     return this.importPhrase(mnemonic.getPhrase());
   }
 
-  async importPhrase(phrase: string): Promise<SecureKey> {
+  public async importPhrase(phrase: string): Promise<SecureKey> {
 
     if (!this.initialized()) {
       throw new Error('Secure module is not initialized');
@@ -92,7 +92,7 @@ export class SecureModule {
     };
   }
 
-  async exportPhrase(entropy: Buffer): Promise<string> {
+  public async exportPhrase(entropy: Buffer): Promise<string> {
 
     if (!this.initialized()) {
       throw new Error('Secure module is not initialized');
@@ -120,7 +120,7 @@ export class SecureModule {
     return mnemonic.getPhrase();
   }
 
-  async sign(key: Buffer, msg: string): Promise<Buffer> {
+  public async sign(key: Buffer, msg: string): Promise<string> {
 
     if (!this.initialized()) {
       throw new Error('Secure module is not initialized');
@@ -149,7 +149,7 @@ export class SecureModule {
       throw new Error('Failed to decrypt key');
     }
 
-    return message.sign(msg, decrypted, true);
+    return message.sign(msg, decrypted, true).toString('base64');
   }
 
 }

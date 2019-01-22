@@ -52,8 +52,9 @@ describe('signature', () => {
 
   it('Function "sign" should produce valid signature', async () => {
     const sig = await sm.sign(encryptedKey.privateKey, hashToSign);
-    console.log('sing', sig.toString('base64'));
-    assert(message.verify(hashToSign, encryptedKey.publicKey, sig.toString('base64')));
+    assert(message.verify(hashToSign, encryptedKey.publicKey, sig));
+    const expect = 'INadOqMkvrdq9spX1Mp5anK5+OtRED3OWGbhUfXW6igNO6fn1ONsKOPbW+IatF0WExtxAyh4N3L4JVi6gZeYgTg=';
+    assert.equal(expect, sig, 'Signature not as expected');
   });
 
 });
