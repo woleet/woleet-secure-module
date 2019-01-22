@@ -13,26 +13,39 @@ export class SecureModule {
   private secret: Buffer = null;
 
   // https://en.wikipedia.org/wiki/Initialization_vector
-  private iv = crypto.randomBytes(16);
+  private iv: Buffer = null;
 
   private initialized() {
     return !!this.secret;
   }
 
-  public encrypt(data: Buffer) {
+  private _encrypt(data: Buffer) {
     const cipher = crypto.createCipheriv('aes-256-cbc', this.secret, this.iv);
     return Buffer.concat([cipher.update(data), cipher.final()]);
   }
 
-  public decrypt(data: Buffer) {
+  private _decrypt(data: Buffer) {
     const decipher = crypto.createDecipheriv('aes-256-cbc', this.secret, this.iv);
     return Buffer.concat([decipher.update(data), decipher.final()]);
   }
 
-  async init() {
+  public async init(): Promise<void> {
     this.secret = crypto.createHash('sha256')
       .update(process.env.ENCRYPTION_SECRET || 'secret', 'utf8')
       .digest();
+
+    this.iv = crypto.createHash('sha256')
+      .update('W').update('O').update('L')
+      .digest()
+      .slice(0, 16);
+  }
+
+  public async encrypt(data: Buffer): Promise<Buffer> {
+    return this._encrypt(data);
+  }
+
+  public async decrypt(data: Buffer): Promise<Buffer> {
+    return this._decrypt(data);
   }
 
   public async createKey(): Promise<SecureKey> {
@@ -82,8 +95,8 @@ export class SecureModule {
     const publicKey = ring.getAddress();
     const privateKey = ring.getPrivateKey();
 
-    const encryptedEntropy = this.encrypt(mnemonic.getEntropy());
-    const encryptedPrivateKey = this.encrypt(privateKey);
+    const encryptedEntropy = this._encrypt(mnemonic.getEntropy());
+    const encryptedPrivateKey = this._encrypt(privateKey);
 
     return {
       entropy: encryptedEntropy,
@@ -108,7 +121,7 @@ export class SecureModule {
 
     let decrypted = null;
     try {
-      decrypted = this.decrypt(entropy);
+      decrypted = this._decrypt(entropy);
     } catch (err) {
       throw new Error('Failed to decrypt entropy');
     }
@@ -144,7 +157,7 @@ export class SecureModule {
 
     let decrypted = null;
     try {
-      decrypted = this.decrypt(key);
+      decrypted = this._decrypt(key);
     } catch (err) {
       throw new Error('Failed to decrypt key');
     }
