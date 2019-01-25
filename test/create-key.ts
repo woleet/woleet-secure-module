@@ -23,12 +23,16 @@ describe('Key creation', () => {
 
   it('Function "createKey" should reject if called with arguments (1)', async () => {
     // @ts-ignore
-    await assert.rejects(() => sm.createKey('toto'), { message: 'Function "createKey" does not takes arguments' });
+    await assert.rejects(() => sm.createKey('toto'), {
+      message: 'Function "createKey" does not takes any argument'
+     });
   });
 
   it('Function "createKey" should reject if called with arguments (2)', async () => {
     // @ts-ignore
-    await assert.rejects(() => sm.createKey(null), { message: 'Function "createKey" does not takes arguments' });
+    await assert.rejects(() => sm.createKey(null), {
+       message: 'Function "createKey" does not takes any argument'
+       });
   });
 
   describe('Should return a valid object', () => {

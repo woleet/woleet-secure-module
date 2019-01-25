@@ -17,32 +17,43 @@ describe('Phrase export', () => {
 
   it('Function "exportPhrase" should reject if called without argument', async () => {
     // @ts-ignore
-    await assert.rejects(() => sm.exportPhrase(), { message: 'ExportPhrase takes only one argument'});
+    await assert.rejects(() => sm.exportPhrase(), {
+      message: 'ExportPhrase takes exactly two arguments'
+    });
   });
 
-  it('Function "exportPhrase" should be callable with one valid arguments', async () => {
-    assert.doesNotThrow(() => sm.exportPhrase(encryptedKey.entropy));
-    await assert.doesNotReject(() => sm.exportPhrase(encryptedKey.entropy));
+  it('Function "exportPhrase" should be callable with two valid arguments', async () => {
+    assert.doesNotThrow(() => sm.exportPhrase(encryptedKey.entropy, encryptedKey.entropyIV));
+    await assert.doesNotReject(() => sm.exportPhrase(encryptedKey.entropy, encryptedKey.entropyIV));
   });
 
-  it('Function "exportPhrase" should reject with one invalid argument', async () => {
+  it('Function "exportPhrase" should reject with invalid number of argument', async () => {
     // @ts-ignore
-    await assert.rejects(() => sm.exportPhrase('test'), { message: 'First argument must be a 32 bytes length buffer'});
+    await assert.rejects(() => sm.exportPhrase('test'), {
+      message: 'ExportPhrase takes exactly two arguments'
+    });
   });
 
-  it('Function "exportPhrase" should reject with two arguments', async () => {
+  it('Function "exportPhrase" should reject with invalid second argument', async () => {
     // @ts-ignore
-    await assert.rejects(() => sm.exportPhrase(encryptedKey.entropy, 'test'), { message: 'ExportPhrase takes only one argument'});
+    await assert.rejects(() => sm.exportPhrase(encryptedKey.entropy, 'test'), {
+      message: 'Argument "iv" must be a 16 bytes buffer'
+    });
   });
 
-  it('Function "exportPhrase" should reject with one invalid arguments (1)', async () => {
+  it('Function "exportPhrase" should reject with invalid first argument', async () => {
     const invalid = Buffer.from(encryptedKey.entropy);
     crypto.randomBytes(5).copy(invalid);
-    await assert.rejects(() => sm.exportPhrase(invalid), { message: 'Failed to decrypt entropy'});
+    // @ts-ignore
+    await assert.rejects(() => sm.exportPhrase(invalid, encryptedKey.entropyIV), {
+      message: 'Failed to decrypt entropy'
+    });
   });
 
-  it('Function "exportPhrase" should reject with one invalid arguments (2)', async () => {
+  it('Function "exportPhrase" should reject with invalid first arguments (2)', async () => {
     const invalid = Buffer.concat([encryptedKey.entropy, crypto.randomBytes(2)]);
-    await assert.rejects(() => sm.exportPhrase(invalid), { message: 'First argument must be a 32 bytes length buffer'});
+    await assert.rejects(() => sm.exportPhrase(invalid, encryptedKey.entropyIV), {
+      message: 'First argument must be a 32 bytes length buffer'
+    });
   });
 });

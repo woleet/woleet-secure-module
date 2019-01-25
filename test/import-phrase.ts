@@ -17,7 +17,9 @@ describe('Phrase import', () => {
 
   it('Function "importPhrase" should reject if called without argument', async () => {
     // @ts-ignore
-    await assert.rejects(() => sm.importPhrase(), { message: 'Function "importPhrase" takes only one argument' });
+    await assert.rejects(() => sm.importPhrase(), {
+      message: 'Function "importPhrase" takes exactly one argument'
+    });
   });
 
   it('Function "importPhrase" should be callable with one valid arguments', async () => {
@@ -26,17 +28,21 @@ describe('Phrase import', () => {
   });
 
   it('Function "importPhrase" should reject with one invalid argument', async () => {
-    await assert.rejects(() => sm.importPhrase('test'), { message: 'First argument must be a valid phrase' });
+    await assert.rejects(() => sm.importPhrase('test'), {
+      message: 'First argument must be a valid phrase'
+    });
   });
 
   it('Function "importPhrase" should reject with two arguments', async () => {
     // @ts-ignore
-    await assert.rejects(() => sm.importPhrase('entropy', 'test'), { message: 'Function "importPhrase" takes only one argument' });
+    await assert.rejects(() => sm.importPhrase('entropy', 'test'), {
+      message: 'Function "importPhrase" takes exactly one argument'
+    });
   });
 
   it('Function "exportPhrase" should return the imported phrase', async () => {
     const key = await sm.importPhrase(validPhrase);
-    const phrase = await sm.exportPhrase(key.entropy);
+    const phrase = await sm.exportPhrase(key.entropy, key.entropyIV);
     assert.equal(phrase, validPhrase, 'Function "exportPhrase" did not returned the expected value');
   });
 
