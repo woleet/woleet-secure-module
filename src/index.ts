@@ -14,9 +14,6 @@ export class SecureModule {
 
   private secret: Buffer = null;
 
-  // https://en.wikipedia.org/wiki/Initialization_vector
-  private iv: Buffer = null;
-
   private initialized() {
     return !!this.secret;
   }
