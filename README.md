@@ -1,7 +1,7 @@
 # Woleet secure moodule
 ## Prerequisite
 
-node 10 and npm
+node 10, npm, compiler C/C++, debhelper
 
 ## Development mode:
 #### Install the node packages:
