@@ -18,7 +18,7 @@ describe('Phrase import', () => {
   it('Function "importPhrase" should reject if called without argument', async () => {
     // @ts-ignore
     await assert.rejects(() => sm.importPhrase(), {
-      message: 'Function "importPhrase" takes exactly one argument'
+      message: 'Function "importPhrase" takes one mandatory argument and may take one optional argument'
     });
   });
 
@@ -27,16 +27,23 @@ describe('Phrase import', () => {
     await assert.doesNotReject(() => sm.importPhrase(validPhrase));
   });
 
-  it('Function "importPhrase" should reject with one invalid argument', async () => {
+  it('Function "importPhrase" should reject with invalid first argument', async () => {
     await assert.rejects(() => sm.importPhrase('test'), {
       message: 'First argument must be a valid phrase'
     });
   });
 
-  it('Function "importPhrase" should reject with two arguments', async () => {
+  it('Function "importPhrase" should reject with invalid second argument', async () => {
     // @ts-ignore
     await assert.rejects(() => sm.importPhrase('entropy', 'test'), {
-      message: 'Function "importPhrase" takes exactly one argument'
+      message: 'Second argument must be a boolean'
+    });
+  });
+
+  it('Function "importPhrase" should reject with three arguments', async () => {
+    // @ts-ignore
+    await assert.rejects(() => sm.importPhrase('entropy', true, 'test'), {
+      message: 'Function "importPhrase" takes one mandatory argument and may take one optional argument'
     });
   });
 

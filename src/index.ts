@@ -1,6 +1,8 @@
 import * as crypto from 'crypto';
 import * as message from 'bitcoinjs-message';
+import * as read from 'read';
 import { Mnemonic, HDPrivateKey, KeyRing } from 'bcoin';
+import { promisify } from 'util';
 
 type Base58Address = string;
 
@@ -10,6 +12,7 @@ export interface SecureKey {
   privateKeyIV: Buffer;
   privateKey: Buffer;
   publicKey: Base58Address;
+  compressed: boolean;
 }
 
 export class SecureModule {
@@ -34,9 +37,31 @@ export class SecureModule {
     return crypto.randomBytes(n);
   }
 
-  public async init(): Promise<void> {
+  public async init(variable = 'ENCRYPTION_SECRET'): Promise<void> {
+    if (arguments.length > 1) {
+      throw new Error('Function "init" may take only one (optional) argument');
+    }
+
+    if (typeof variable !== 'string') {
+      throw new Error('First argument must be a string');
+    }
+
+    let secret = process.env[variable] || '';
+
+    if (!secret) {
+      console.warn(`No ${variable} environment set, please enter encryption secret:`);
+      const options = { prompt: '>', silent: true };
+      const _read = promisify(read);
+      while (!secret) {
+        secret = await _read(options);
+        if (!secret) {
+          console.warn('Encryption secret must not be empty, please type it:');
+        }
+      }
+    }
+
     this.secret = crypto.createHash('sha256')
-      .update(process.env.ENCRYPTION_SECRET || 'secret', 'utf8')
+      .update(secret, 'utf8')
       .digest();
   }
 
@@ -68,18 +93,22 @@ export class SecureModule {
     return this.importPhrase(mnemonic.getPhrase());
   }
 
-  public async importPhrase(phrase: string): Promise<SecureKey> {
+  public async importPhrase(phrase: string, compressed = true): Promise<SecureKey> {
 
     if (!this.initialized()) {
       throw new Error('Secure module is not initialized');
     }
 
-    if (arguments.length !== 1) {
-      throw new Error('Function "importPhrase" takes exactly one argument');
+    if (arguments.length !== 1 && arguments.length !== 2) {
+      throw new Error('Function "importPhrase" takes one mandatory argument and may take one optional argument');
     }
 
     if (typeof phrase !== 'string') {
       throw new Error('First argument must be a string');
+    }
+
+    if (typeof compressed !== 'boolean') {
+      throw new Error('Second argument must be a boolean');
     }
 
     let mnemonic;
@@ -94,7 +123,7 @@ export class SecureModule {
     const master = HDPrivateKey.fromMnemonic(mnemonic);
     const xkey = master.derivePath('m/44\'/0\'/0\'');
 
-    const ring = KeyRing.fromPrivate(xkey.privateKey, true);
+    const ring = KeyRing.fromPrivate(xkey.privateKey, compressed);
 
     const publicKey = ring.getAddress();
     const privateKey = ring.getPrivateKey();
@@ -110,6 +139,7 @@ export class SecureModule {
       privateKeyIV: privateKeyIV,
       privateKey: encryptedPrivateKey,
       publicKey: publicKey.toBase58(),
+      compressed
     };
   }
 
@@ -145,14 +175,14 @@ export class SecureModule {
     return mnemonic.getPhrase();
   }
 
-  public async sign(key: Buffer, msg: string, iv: Buffer): Promise<string> {
+  public async sign(key: Buffer, msg: string, iv: Buffer, compressed = true): Promise<string> {
 
     if (!this.initialized()) {
       throw new Error('Secure module is not initialized');
     }
 
-    if (arguments.length !== 3) {
-      throw new Error('Function "sign" takes exactly three arguments');
+    if (arguments.length !== 3 && arguments.length !== 4) {
+      throw new Error('Function "sign" takes three arguments, and may take an fourth otional one');
     }
 
     if (!Buffer.isBuffer(key)) {
@@ -167,6 +197,10 @@ export class SecureModule {
       throw new Error('Argument "message" must be a string');
     }
 
+    if (typeof compressed !== 'boolean') {
+      throw new Error('Second argument must be a boolean');
+    }
+
     if (!(Buffer.isBuffer(iv) && iv.length === 16)) {
       throw new Error('Argument "iv" must be a 16 bytes buffer');
     }
@@ -178,7 +212,7 @@ export class SecureModule {
       throw new Error('Failed to decrypt key');
     }
 
-    return message.sign(msg, decrypted, true).toString('base64');
+    return message.sign(msg, decrypted, compressed).toString('base64');
   }
 
 }

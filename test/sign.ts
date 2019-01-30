@@ -22,7 +22,7 @@ describe('signature', () => {
   it('Function "sign" should reject if called without argument', async () => {
     // @ts-ignore
     await assert.rejects(() => sm.sign(), {
-      message: 'Function "sign" takes exactly three arguments'
+      message: 'Function "sign" takes three arguments, and may take an fourth otional one'
     });
   });
 
@@ -34,7 +34,7 @@ describe('signature', () => {
   it('Function "sign" should reject with one invalid argument', async () => {
     // @ts-ignore
     await assert.rejects(() => sm.sign('test'), {
-      message: 'Function "sign" takes exactly three arguments'
+      message: 'Function "sign" takes three arguments, and may take an fourth otional one'
     });
   });
 
