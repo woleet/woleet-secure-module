@@ -7,5 +7,8 @@ node 10, npm
 #### Install the node packages:
     $ npm install
 
+#### Test
+    $ npm test
+
 #### Build 
     $ npm run build
