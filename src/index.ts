@@ -2,6 +2,8 @@ import * as crypto from 'crypto';
 import * as message from 'bitcoinjs-message';
 import { Mnemonic, HDPrivateKey, KeyRing } from 'bcoin';
 
+type Base58Address = string;
+
 export interface SecureKey {
   entropyIV: Buffer;
   entropy: Buffer;

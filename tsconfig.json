@@ -8,7 +8,8 @@
     "typeRoots": [
       "node_modules/@types",
       "./types"
-    ]
+    ],
+    "declaration": true
   },
   "include": [
     "index.ts",

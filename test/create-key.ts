@@ -1,6 +1,5 @@
 import 'mocha';
 import * as assert from 'assert';
-import * as base58 from 'bs58';
 
 import { SecureModule, SecureKey } from '../src';
 import { publicKeyRegexep } from './util';

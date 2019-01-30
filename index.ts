@@ -1,2 +1,1 @@
-import { SecureKey, SecureModule } from './src';
-export { SecureKey, SecureModule };
+export { SecureKey, SecureModule } from './src';
