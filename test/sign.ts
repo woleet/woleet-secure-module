@@ -8,12 +8,13 @@ import { SecureModule, SecureKey } from '../src';
 import { validPhrase } from './util';
 
 const sm = new SecureModule;
-let key: SecureKey;
+let key, keyUncompressed: SecureKey;
 const hashToSign = crypto.createHash('sha256').digest('hex');
 
 before(async () => {
   await sm.init();
   key = await sm.importPhrase(validPhrase);
+  keyUncompressed = await sm.importPhrase(validPhrase, false);
 });
 
 // https://github.com/mochajs/mocha/issues/2975
@@ -72,6 +73,13 @@ describe('signature', () => {
     const sig = await sm.sign(key.privateKey, hashToSign, key.privateKeyIV);
     assert(message.verify(hashToSign, key.publicKey, sig));
     const expect = 'INadOqMkvrdq9spX1Mp5anK5+OtRED3OWGbhUfXW6igNO6fn1ONsKOPbW+IatF0WExtxAyh4N3L4JVi6gZeYgTg=';
+    assert.equal(expect, sig, 'Signature not as expected');
+  });
+
+  it('Function "sign" should produce valid signature with uncompressed key', async () => {
+    const sig = await sm.sign(keyUncompressed.privateKey, hashToSign, keyUncompressed.privateKeyIV, false);
+    assert(message.verify(hashToSign, keyUncompressed.publicKey, sig));
+    const expect = 'HNadOqMkvrdq9spX1Mp5anK5+OtRED3OWGbhUfXW6igNO6fn1ONsKOPbW+IatF0WExtxAyh4N3L4JVi6gZeYgTg=';
     assert.equal(expect, sig, 'Signature not as expected');
   });
 
