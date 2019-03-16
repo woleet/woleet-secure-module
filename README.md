@@ -1,8 +1,9 @@
 # Woleet Secure Module
 
 This module is used by Woleet.ID Server to manage:
+- key generation and import/export functions
+- signature functions
 - encryption/decryption functions
-- key generation and import/export functions.
 
 The idea is to keep all sensitive data isolated in this moduleto improve security and to allow different implementations.
 
