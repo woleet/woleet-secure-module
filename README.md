@@ -5,7 +5,7 @@ This module is used by Woleet.ID Server to manage:
 - signature functions
 - encryption/decryption functions
 
-The idea is to keep all sensitive data isolated in this moduleto improve security and to allow different implementations.
+The idea is to keep all sensitive data isolated in this module to improve security and to allow different implementations.
 
 ## Prerequisite
 
@@ -19,7 +19,7 @@ node >=10, npm
 
 ### Test secure module
 
-- Set the environement variable ENCRYPTION_SECRET to any value
+- Set the environment variable ENCRYPTION_SECRET to any value
 - Start the tests:
 
     $ npm test
