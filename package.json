@@ -14,7 +14,7 @@
   "scripts": {
     "build": "npx tsc",
     "install": "npm run build",
-    "test": "npx mocha -r ts-node/register test/*.ts --exit",
+    "test": "export ENCRYPTION_SECRET=secret && npx mocha -r ts-node/register test/*.ts --exit",
     "clean": "rm -r dist"
   },
   "author": "",
