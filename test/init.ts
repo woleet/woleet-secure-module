@@ -2,7 +2,7 @@ import 'mocha';
 import * as assert from 'assert';
 import * as crypto from 'crypto';
 
-import { SecureModule, SecureKey } from '../src';
+import { SecureKey, SecureModule } from '../src';
 
 let key: SecureKey;
 const hashToSign = crypto.createHash('sha256').digest('hex');
@@ -13,8 +13,7 @@ before(async () => {
   key = await sm.createKey();
 });
 
-// https://github.com/mochajs/mocha/issues/2975
-describe('Module initialization', () => {
+describe('init', () => {
 
   it('Should reject valid "sign" call if not initialized', async () => {
     const sm = new SecureModule;
@@ -49,8 +48,7 @@ describe('Module initialization', () => {
     const sm = new SecureModule;
     // @ts-ignore
     await assert.rejects(() => sm.init(784489), {
-      message: 'First argument must be a string'
+      message: 'Argument "variable" must be a non empty string'
     });
   });
-
 });

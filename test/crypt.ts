@@ -9,8 +9,7 @@ before(async () => {
   await sm.init();
 });
 
-// https://github.com/mochajs/mocha/issues/2975
-describe('crypt', () => {
+describe('{en|de}crypt', () => {
 
   it('Function "encrypt" should reject if called without argument', async () => {
     // @ts-ignore
@@ -19,12 +18,10 @@ describe('crypt', () => {
 
   it('Function "encrypt" should reject if called with an invalid argument', async () => {
     // @ts-ignore
-    await assert.rejects(() => sm.encrypt(3), {
-      message: 'The "data" argument must be one of type string, Buffer, TypedArray, or DataView. Received type number'
-    });
+    await assert.rejects(() => sm.encrypt(3));
   });
 
-  it('Function "encrypt" should be callable with a valid argument', async () => {
+  it('Function "encrypt" should be callable with 1 valid argument', async () => {
     // @ts-ignore
     await assert.doesNotReject(() => sm.encrypt('test'));
   });
@@ -34,30 +31,29 @@ describe('crypt', () => {
     await assert.rejects(() => sm.decrypt());
   });
 
-  it('Function "decrypt" should reject with if called with one invalid argument', async () => {
+  it('Function "decrypt" should reject with if called with 1 invalid argument', async () => {
     // @ts-ignore
     await assert.rejects(() => sm.decrypt(3));
   });
 
-  it('Function "decrypt" should reject with if called with two invalid argument', async () => {
+  it('Function "decrypt" should reject with if called with 2 invalid argument', async () => {
     // @ts-ignore
     await assert.rejects(() => sm.decrypt(3, 3));
   });
 
   it('Function "decrypt" should be return the same result as passed in the function "encrypt"', async () => {
     const testString = 'test';
-    let decryptedString;
+    let decryptedString = null;
     let encryptedData;
-    let encryptedIv;
+    let encryptedIV;
     // @ts-ignore
-    await assert.doesNotReject(() => sm.encrypt(testString).then( (enc) => {
+    await assert.doesNotReject(() => sm.encrypt(testString).then((enc) => {
       encryptedData = enc.data;
-      encryptedIv = enc.iv;
-      }));
-    await assert.doesNotReject(() => sm.decrypt(encryptedData, encryptedIv).then( (buffer) => {
+      encryptedIV = enc.iv;
+    }));
+    await assert.doesNotReject(() => sm.decrypt(encryptedData, encryptedIV).then((buffer) => {
       decryptedString = buffer.toString('utf8');
     }));
-    assert.equal(decryptedString, testString);
+    assert.strictEqual(decryptedString, testString);
   });
-
 });

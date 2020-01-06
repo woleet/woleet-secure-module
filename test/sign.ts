@@ -4,7 +4,7 @@ import * as crypto from 'crypto';
 
 import * as message from 'bitcoinjs-message';
 
-import { SecureModule, SecureKey } from '../src';
+import { SecureKey, SecureModule } from '../src';
 import { validPhrase } from './util';
 
 const sm = new SecureModule;
@@ -17,53 +17,49 @@ before(async () => {
   keyUncompressed = await sm.importPhrase(validPhrase, false);
 });
 
-// https://github.com/mochajs/mocha/issues/2975
-describe('signature', () => {
+describe('sign', () => {
 
   it('Function "sign" should reject if called without argument', async () => {
     // @ts-ignore
     await assert.rejects(() => sm.sign(), {
-      message: 'Function "sign" takes three arguments, and may take an fourth otional one'
+      message: 'Function "sign" takes 3 mandatory and 1 optional argument'
     });
   });
 
-  it('Function "sign" should be callable with three valid arguments', async () => {
+  it('Function "sign" should be callable with 3 valid arguments', async () => {
     assert.doesNotThrow(() => sm.sign(key.privateKey, hashToSign, key.privateKeyIV));
     await assert.doesNotReject(() => sm.sign(key.privateKey, hashToSign, key.privateKeyIV));
   });
 
-  it('Function "sign" should reject with one invalid argument', async () => {
+  it('Function "sign" should reject with 1st invalid argument (1)', async () => {
     // @ts-ignore
     await assert.rejects(() => sm.sign('test'), {
-      message: 'Function "sign" takes three arguments, and may take an fourth otional one'
+      message: 'Function "sign" takes 3 mandatory and 1 optional argument'
     });
   });
 
-  it('Function "sign" should reject with one invalid argument (1)', async () => {
+  it('Function "sign" should reject with 1st invalid argument (2)', async () => {
     const invalid = crypto.randomBytes(32 + 16);
     await assert.rejects(() => sm.sign(invalid, hashToSign, key.privateKeyIV), {
       message: 'Failed to decrypt key'
     });
   });
 
-  it('Function "sign" should reject with one invalid argument (2)', async () => {
+  it('Function "sign" should reject with 1st invalid argument (3)', async () => {
     const invalid = Buffer.concat([key.privateKey, crypto.randomBytes(2)]);
     await assert.rejects(() => sm.sign(invalid, hashToSign, key.privateKeyIV), {
-      message: 'Argument "key" must be a 38 bytes length buffer'
+      message: 'Argument "key" must be a 48 bytes buffer'
     });
   });
 
-  it('Function "sign" should reject with second invalid argument (3)', async () => {
+  it('Function "sign" should reject with 2nd invalid argument', async () => {
     // @ts-ignore
-    // tslint:disable-next-line:max-line-length
     await assert.rejects(() => sm.sign(key.privateKey, Buffer.from(hashToSign), 'test'), {
-      message: 'Argument "message" must be a string'
+      message: 'Argument "message" must be a non empty string'
     });
   });
 
-  it('Function "sign" should reject with third invalid argument (3)', async () => {
-    // @ts-ignore
-    // tslint:disable-next-line:max-line-length
+  it('Function "sign" should reject with 3rd invalid argument', async () => {
     await assert.rejects(() => sm.sign(key.privateKey, hashToSign, null), {
       message: 'Argument "iv" must be a 16 bytes buffer'
     });
@@ -73,14 +69,13 @@ describe('signature', () => {
     const sig = await sm.sign(key.privateKey, hashToSign, key.privateKeyIV);
     assert(message.verify(hashToSign, key.publicKey, sig));
     const expect = 'INadOqMkvrdq9spX1Mp5anK5+OtRED3OWGbhUfXW6igNO6fn1ONsKOPbW+IatF0WExtxAyh4N3L4JVi6gZeYgTg=';
-    assert.equal(expect, sig, 'Signature not as expected');
+    assert.strictEqual(expect, sig);
   });
 
   it('Function "sign" should produce valid signature with uncompressed key', async () => {
     const sig = await sm.sign(keyUncompressed.privateKey, hashToSign, keyUncompressed.privateKeyIV, false);
     assert(message.verify(hashToSign, keyUncompressed.publicKey, sig));
     const expect = 'HNadOqMkvrdq9spX1Mp5anK5+OtRED3OWGbhUfXW6igNO6fn1ONsKOPbW+IatF0WExtxAyh4N3L4JVi6gZeYgTg=';
-    assert.equal(expect, sig, 'Signature not as expected');
+    assert.strictEqual(expect, sig);
   });
-
 });
