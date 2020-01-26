@@ -1,11 +1,12 @@
 # Woleet Secure Module
 
-This module is used by Woleet.ID Server to manage:
-- key generation and import/export functions
-- signature functions
+This NodeJS module is used by Woleet.ID Server to manage:
+- key generation functions
+- key import/export functions
+- signature functions (path derivation is supported)
 - encryption/decryption functions
 
-The idea is to keep all sensitive data isolated in this module to improve security and to allow different implementations.
+Woleet.ID Server sensitive data are isolated in this module to improve security and ease new implementations.
 
 ## Prerequisite
 
