@@ -10,6 +10,7 @@ import { validPhrase } from './util';
 const sm = new SecureModule;
 let key, keyUncompressed: SecureKey;
 const hashToSign = crypto.createHash('sha256').digest('hex');
+const messageToSign = 'éèàçù';
 
 before(async () => {
   await sm.init();
@@ -66,16 +67,20 @@ describe('sign', () => {
   });
 
   it('Function "sign" should produce valid signature', async () => {
-    const sig = await sm.sign(key.privateKey, hashToSign, key.privateKeyIV);
+    let sig = await sm.sign(key.privateKey, hashToSign, key.privateKeyIV);
     assert(message.verify(hashToSign, key.publicKey, sig));
     const expect = 'INadOqMkvrdq9spX1Mp5anK5+OtRED3OWGbhUfXW6igNO6fn1ONsKOPbW+IatF0WExtxAyh4N3L4JVi6gZeYgTg=';
     assert.strictEqual(expect, sig);
+    sig = await sm.sign(key.privateKey, messageToSign, key.privateKeyIV);
+    assert(message.verify(messageToSign, key.publicKey, sig));
   });
 
   it('Function "sign" should produce valid signature with uncompressed key', async () => {
-    const sig = await sm.sign(keyUncompressed.privateKey, hashToSign, keyUncompressed.privateKeyIV, false);
+    let sig = await sm.sign(keyUncompressed.privateKey, hashToSign, keyUncompressed.privateKeyIV, false);
     assert(message.verify(hashToSign, keyUncompressed.publicKey, sig));
     const expect = 'HNadOqMkvrdq9spX1Mp5anK5+OtRED3OWGbhUfXW6igNO6fn1ONsKOPbW+IatF0WExtxAyh4N3L4JVi6gZeYgTg=';
     assert.strictEqual(expect, sig);
+    sig = await sm.sign(keyUncompressed.privateKey, messageToSign, keyUncompressed.privateKeyIV, false);
+    assert(message.verify(messageToSign, keyUncompressed.publicKey, sig));
   });
 });
