@@ -22,7 +22,7 @@
     "@types/mocha": "8.2.1",
     "@types/node": "14.14.32",
     "@types/secp256k1": "4.0.1",
-    "bcoin": "git+https://github.com/bcoin-org/bcoin.git",
+    "bcoin": "git+https://github.com/bcoin-org/bcoin.git#semver:=2.1.2",
     "bitcoinjs-message": "2.2.0",
     "read": "1.0.7",
     "ts-node": "9.1.1",
